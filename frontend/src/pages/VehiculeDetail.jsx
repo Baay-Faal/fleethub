@@ -144,13 +144,13 @@ const VehiculeDetail = () => {
                 </div>
                 {user?.role === 'ADMIN' && (
                     <div style={{ display: 'flex', gap: '10px' }}>
-                        <button className="btn-secondary" onClick={exportReport} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', color: '#fff', border: '1px solid #333' }}>
-                            <Download size={16} /> EXPORTER
+                        <button className="btn-secondary" onClick={exportReport} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <Download size={16} /> EXPORTER PDF
                         </button>
-                        <button className="btn-secondary" onClick={openEditModal} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', color: '#fff', border: '1px solid #333' }}>
+                        <button className="btn-secondary" onClick={openEditModal} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <Edit size={16} /> MODIFIER
                         </button>
-                        <button className="btn-secondary" onClick={handleDelete} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', color: 'var(--danger)', borderColor: 'var(--danger)' }}>
+                        <button className="btn-secondary" onClick={handleDelete} style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--danger)', borderColor: 'var(--danger)' }}>
                             <Trash2 size={16} /> SUPPRIMER
                         </button>
                     </div>

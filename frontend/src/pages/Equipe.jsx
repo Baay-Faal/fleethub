@@ -63,13 +63,31 @@ const Equipe = () => {
         return matchesSearch && matchesRole;
     });
 
+    const exportCSV = () => {
+        const header = "PRENOM,NOM,EMAIL,ROLE\n";
+        const rows = utilisateurs.map(u => `${u.prenom},${u.nom},${u.email},${u.role}`).join("\n");
+        const csvContent = "data:text/csv;charset=utf-8," + header + rows;
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "equipe_fleethub.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     return (
         <div className="animate-fade-in" style={{ maxWidth: '1200px', margin: '0 auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                 <h1 style={{ fontSize: '3rem', margin: 0 }}>ÉQUIPE.</h1>
-                <button className="btn-primary" onClick={() => setIsModalOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Plus size={18} strokeWidth={2} /> NOUVEAU MEMBRE
-                </button>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                    <button className="btn-secondary" onClick={exportCSV} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '18px' }}>↓</span> EXPORTER CSV
+                    </button>
+                    <button className="btn-primary" onClick={() => setIsModalOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <Plus size={18} strokeWidth={2} /> NOUVEAU MEMBRE
+                    </button>
+                </div>
             </div>
 
             <div style={{ display: 'flex', gap: '16px', marginBottom: '20px' }}>

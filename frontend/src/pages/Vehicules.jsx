@@ -107,7 +107,7 @@ const Vehicules = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                 <h1 style={{ fontSize: '3rem', margin: 0 }}>VÉHICULES.</h1>
                 <div style={{ display: 'flex', gap: '10px' }}>
-                    <button className="btn-secondary" onClick={exportCSV} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', color: '#fff', border: '1px solid #333' }}>
+                    <button className="btn-secondary" onClick={exportCSV} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <span style={{ fontSize: '18px' }}>↓</span> EXPORTER CSV
                     </button>
                     <button className="btn-primary" onClick={() => setIsModalOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

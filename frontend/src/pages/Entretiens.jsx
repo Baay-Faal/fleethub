@@ -114,13 +114,35 @@ const Entretiens = () => {
         return matchesSearch && matchesStatus;
     });
 
+    const exportCSV = () => {
+        const header = "VEHICULE,CHAUFFEUR,TYPE,DATE PREVUE,STATUT,COUT\n";
+        const rows = entretiens.map(e => {
+            const vName = getVehiculeName(e.vehicule).replace(/,/g, ' ');
+            const cName = e.chauffeur_details ? `${e.chauffeur_details.prenom} ${e.chauffeur_details.nom}`.replace(/,/g, ' ') : '';
+            return `${vName},${cName},${e.type_intervention || e.type_entretien},${new Date(e.date_prevue).toLocaleDateString()},${e.statut},${e.cout}`;
+        }).join("\n");
+        const csvContent = "data:text/csv;charset=utf-8," + header + rows;
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "entretiens_fleethub.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     return (
         <div className="animate-fade-in" style={{ maxWidth: '1200px', margin: '0 auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                 <h1 style={{ fontSize: '3rem', margin: 0 }}>ENTRETIENS.</h1>
-                <button className="btn-primary" onClick={() => setIsModalOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Plus size={18} strokeWidth={2} /> PLANIFIER
-                </button>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                    <button className="btn-secondary" onClick={exportCSV} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '18px' }}>↓</span> EXPORTER CSV
+                    </button>
+                    <button className="btn-primary" onClick={() => setIsModalOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <Plus size={18} strokeWidth={2} /> PLANIFIER
+                    </button>
+                </div>
             </div>
 
             <div style={{ display: 'flex', gap: '16px', marginBottom: '20px' }}>

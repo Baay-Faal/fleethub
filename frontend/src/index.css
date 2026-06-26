@@ -80,6 +80,23 @@ button {
   background-color: #757575;
 }
 
+.btn-secondary {
+  background-color: transparent;
+  color: var(--text-main);
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 13px;
+  transition: all var(--transition-fast);
+  text-transform: uppercase;
+  border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+  border-color: var(--text-main);
+  background-color: var(--bg-panel);
+}
+
 .panel {
   background: var(--bg-color);
   border: 1px solid var(--border-color);
