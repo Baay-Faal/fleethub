@@ -25,8 +25,10 @@ urlpatterns = [
     path('api/docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('api/redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     
-    # Futures routes API
-    # path('api/v1/auth/', include('rest_framework_simplejwt.urls')), # Prochaine étape
+    # Routes API v1
+    path('api/v1/', include('apps.utilisateurs.urls')),
+    path('api/v1/', include('apps.vehicules.urls')),
+    path('api/v1/', include('apps.affectations.urls')),
 ]
 
 if settings.DEBUG:
