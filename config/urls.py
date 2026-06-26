@@ -12,7 +12,7 @@ schema_view = get_schema_view(
       title="FleetHub API",
       default_version='v1',
       description="API REST pour la gestion de flotte automobile (FleetHub)",
-      contact=openapi.Contact(email="contact@fleethub.local"),
+      contact=openapi.Contact(email="contact@fleethub.com"),
    ),
    public=True,
    permission_classes=[permissions.AllowAny],

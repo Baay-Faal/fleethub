@@ -5,9 +5,9 @@ import Layout from './components/Layout';
 import Login from './pages/Login';
 
 const DashboardPlaceholder = () => (
-    <div className="glass-panel" style={{ padding: '30px' }}>
-        <h2 style={{ marginBottom: '15px' }}>Tableau de bord</h2>
-        <p style={{ color: 'var(--text-muted)' }}>Bienvenue sur FleetHub. Vos statistiques clés apparaîtront ici très prochainement.</p>
+    <div className="panel animate-fade-in" style={{ maxWidth: '800px' }}>
+        <h2 style={{ fontSize: '2rem', marginBottom: '20px' }}>RÉSUMÉ DE LA FLOTTE</h2>
+        <p style={{ color: 'var(--text-muted)' }}>Statistiques clés et alertes imminentes apparaîtront ici.</p>
     </div>
 );
 
@@ -20,10 +20,10 @@ function App() {
           
           <Route path="/" element={<Layout />}>
             <Route index element={<DashboardPlaceholder />} />
-            <Route path="vehicules" element={<div className="glass-panel" style={{ padding: '30px' }}><h3>Véhicules (En construction)</h3></div>} />
-            <Route path="affectations" element={<div className="glass-panel" style={{ padding: '30px' }}><h3>Affectations (En construction)</h3></div>} />
-            <Route path="energie" element={<div className="glass-panel" style={{ padding: '30px' }}><h3>Énergie (En construction)</h3></div>} />
-            <Route path="entretiens" element={<div className="glass-panel" style={{ padding: '30px' }}><h3>Entretiens (En construction)</h3></div>} />
+            <Route path="vehicules" element={<div className="panel"><h2>VÉHICULES</h2></div>} />
+            <Route path="affectations" element={<div className="panel"><h2>AFFECTATIONS</h2></div>} />
+            <Route path="energie" element={<div className="panel"><h2>ÉNERGIE</h2></div>} />
+            <Route path="entretiens" element={<div className="panel"><h2>ENTRETIENS</h2></div>} />
           </Route>
         </Routes>
       </AuthProvider>

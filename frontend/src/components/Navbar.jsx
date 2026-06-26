@@ -1,25 +1,20 @@
 import React, { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { LogOut, User } from 'lucide-react';
+import { Power } from 'lucide-react';
 
 const Navbar = () => {
     const { logout } = useContext(AuthContext);
 
     return (
-        <header style={{ height: '70px', backgroundColor: 'var(--bg-panel)', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', zIndex: 5 }}>
-            <h2 style={{ fontSize: '1.2rem', color: 'var(--text-main)', fontWeight: 600 }}>Espace de Gestion</h2>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-main)' }}>
-                    <div style={{ backgroundColor: 'var(--primary-color)', color: 'white', borderRadius: '50%', width: '35px', height: '35px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <User size={18} />
-                    </div>
-                    <span style={{ fontWeight: 500 }}>Administrateur</span>
-                </div>
-                <button onClick={logout} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', borderRadius: 'var(--radius-sm)', backgroundColor: 'transparent', border: '1px solid var(--danger)', color: 'var(--danger)', transition: 'var(--transition-fast)' }}
-                    onMouseOver={(e) => { e.currentTarget.style.backgroundColor = 'var(--danger)'; e.currentTarget.style.color = 'white'; }}
-                    onMouseOut={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = 'var(--danger)'; }}
+        <header style={{ height: '100px', backgroundColor: 'var(--bg-color)', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 40px' }}>
+            <h2 style={{ fontSize: '1.5rem', color: 'var(--text-main)', margin: 0 }}>VUE D'ENSEMBLE</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '30px' }}>
+                <span style={{ fontWeight: 600, fontSize: '15px' }}>ADMINISTRATEUR</span>
+                <button onClick={logout} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '999px', backgroundColor: 'var(--bg-panel)', color: 'var(--text-main)', fontWeight: 500, transition: 'var(--transition-fast)' }}
+                    onMouseOver={(e) => { e.currentTarget.style.backgroundColor = '#E5E5E5'; }}
+                    onMouseOut={(e) => { e.currentTarget.style.backgroundColor = 'var(--bg-panel)'; }}
                 >
-                    <LogOut size={16} /> Déconnexion
+                    <Power size={18} strokeWidth={1.5} /> DÉCONNEXION
                 </button>
             </div>
         </header>

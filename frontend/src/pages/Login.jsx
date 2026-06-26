@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { LogIn } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import logo from '../assets/logo.png';
 
@@ -11,7 +11,6 @@ const Login = () => {
     const { login, user } = useContext(AuthContext);
     const navigate = useNavigate();
 
-    // Si déjà connecté, on redirige vers l'accueil
     if (user) {
         return <Navigate to="/" replace />;
     }
@@ -28,33 +27,44 @@ const Login = () => {
     };
 
     return (
-        <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-color)' }}>
-            <div className="glass-panel animate-fade-in" style={{ padding: '40px', width: '100%', maxWidth: '400px', textAlign: 'center' }}>
-                <img src={logo} alt="FleetHub Logo" style={{ height: '50px', marginBottom: '30px' }} />
-                <h2 style={{ marginBottom: '20px' }}>Connexion</h2>
-                {error && <div style={{ color: 'var(--danger)', marginBottom: '15px' }}>{error}</div>}
+        <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
+            <div style={{ flex: 1, backgroundColor: 'var(--bg-panel)', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '10%' }}>
+                <img src={logo} alt="FleetHub" style={{ height: '50px', marginBottom: 'auto', alignSelf: 'flex-start', filter: 'grayscale(100%)' }} />
                 
-                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                    <input 
-                        type="email" 
-                        placeholder="Adresse email" 
-                        value={email} 
-                        onChange={(e) => setEmail(e.target.value)}
-                        style={{ padding: '12px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)', outline: 'none' }}
-                        required
-                    />
-                    <input 
-                        type="password" 
-                        placeholder="Mot de passe" 
-                        value={password} 
-                        onChange={(e) => setPassword(e.target.value)}
-                        style={{ padding: '12px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)', outline: 'none' }}
-                        required
-                    />
-                    <button type="submit" className="btn-primary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                        <LogIn size={20} /> Se connecter
-                    </button>
-                </form>
+                <div className="animate-fade-in" style={{ maxWidth: '450px', width: '100%' }}>
+                    <h1 style={{ fontSize: '3.5rem', lineHeight: '1', marginBottom: '40px' }}>VOTRE FLOTTE.<br/>SOUS CONTRÔLE.</h1>
+                    {error && <div style={{ color: 'var(--danger)', marginBottom: '20px', fontWeight: 500 }}>{error}</div>}
+                    
+                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                        <input 
+                            type="email" 
+                            placeholder="Adresse e-mail" 
+                            value={email} 
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="input-field"
+                            required
+                        />
+                        <input 
+                            type="password" 
+                            placeholder="Mot de passe" 
+                            value={password} 
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="input-field"
+                            required
+                        />
+                        <button type="submit" className="btn-primary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '10px' }}>
+                            <span>SE CONNECTER</span>
+                            <ArrowRight size={20} strokeWidth={2} />
+                        </button>
+                    </form>
+                </div>
+                <div style={{ marginTop: 'auto', color: 'var(--text-muted)', fontSize: '13px' }}>
+                    &copy; 2026 FleetHub Inc. Tous droits réservés.
+                </div>
+            </div>
+            
+            {/* Background image style Nike pour le côté droit */}
+            <div style={{ flex: 1, backgroundColor: '#111111', backgroundImage: 'url(https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80)', backgroundSize: 'cover', backgroundPosition: 'center', filter: 'grayscale(100%) contrast(120%)' }}>
             </div>
         </div>
     );
