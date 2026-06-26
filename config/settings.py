@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     # Local apps
     'apps.utilisateurs',
     'apps.vehicules',
+    'apps.affectations',
 ]
 
 MIDDLEWARE = [
