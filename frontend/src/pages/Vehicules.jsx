@@ -1,30 +1,67 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/axios';
 import { Plus } from 'lucide-react';
+import Modal from '../components/Modal';
 
 const Vehicules = () => {
     const [vehicules, setVehicules] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [formData, setFormData] = useState({
+        immatriculation: '',
+        marque: '',
+        modele: '',
+        annee: new Date().getFullYear(),
+        statut: 'DISPONIBLE'
+    });
+    const [formError, setFormError] = useState('');
+
+    const fetchVehicules = async () => {
+        try {
+            const res = await api.get('/vehicules/');
+            setVehicules(res.data);
+        } catch (error) {
+            console.error("Erreur vehicules", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchVehicules = async () => {
-            try {
-                const res = await api.get('/vehicules/');
-                setVehicules(res.data);
-            } catch (error) {
-                console.error("Erreur vehicules", error);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchVehicules();
     }, []);
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setFormError('');
+        try {
+            await api.post('/vehicules/', {
+                ...formData,
+                type_vehicule: 'VOITURE',
+                motorisation: 'ESSENCE',
+                date_achat: `${formData.annee}-01-01`,
+                prix_achat: '0.00',
+                vin: 'VIN-' + Date.now(),
+                expiration_assurance: '2030-01-01',
+                expiration_controle_technique: '2030-01-01'
+            });
+            setIsModalOpen(false);
+            setFormData({ immatriculation: '', marque: '', modele: '', annee: new Date().getFullYear(), statut: 'DISPONIBLE' });
+            fetchVehicules(); // Rafraîchit la liste
+        } catch (error) {
+            setFormError(error.response?.data?.detail || JSON.stringify(error.response?.data) || "Erreur lors de l'ajout du véhicule.");
+        }
+    };
 
     return (
         <div className="animate-fade-in" style={{ maxWidth: '1200px', margin: '0 auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
                 <h1 style={{ fontSize: '3rem', margin: 0 }}>VÉHICULES.</h1>
-                <button className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <button className="btn-primary" onClick={() => setIsModalOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Plus size={18} strokeWidth={2} /> AJOUTER
                 </button>
             </div>
@@ -68,6 +105,25 @@ const Vehicules = () => {
                     </tbody>
                 </table>
             </div>
+
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="NOUVEAU VÉHICULE">
+                {formError && <div style={{ color: 'var(--danger)', marginBottom: '15px', fontWeight: 500 }}>{formError}</div>}
+                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <input type="text" name="immatriculation" placeholder="Immatriculation (ex: AB-123-CD)" value={formData.immatriculation} onChange={handleChange} className="input-field" required />
+                    <input type="text" name="marque" placeholder="Marque (ex: Renault)" value={formData.marque} onChange={handleChange} className="input-field" required />
+                    <input type="text" name="modele" placeholder="Modèle (ex: Clio)" value={formData.modele} onChange={handleChange} className="input-field" required />
+                    <input type="number" name="annee" placeholder="Année" value={formData.annee} onChange={handleChange} className="input-field" required min="1990" max="2100" />
+                    
+                    <select name="statut" value={formData.statut} onChange={handleChange} className="input-field" required style={{ backgroundColor: '#fff', cursor: 'pointer' }}>
+                        <option value="DISPONIBLE">DISPONIBLE</option>
+                        <option value="EN_MAINTENANCE">EN MAINTENANCE</option>
+                        <option value="EN_MISSION">EN MISSION</option>
+                        <option value="HORS_SERVICE">HORS SERVICE</option>
+                    </select>
+                    
+                    <button type="submit" className="btn-primary" style={{ marginTop: '16px' }}>ENREGISTRER</button>
+                </form>
+            </Modal>
         </div>
     );
 };
