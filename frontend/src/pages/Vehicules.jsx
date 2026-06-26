@@ -3,6 +3,25 @@ import api from '../api/axios';
 import { Plus } from 'lucide-react';
 import Modal from '../components/Modal';
 
+const VEHICULES_SENEGAL = [
+    { id: 1, marque: 'Toyota', modele: 'Hilux', annee: 2022, motorisation: 'DIESEL', type_vehicule: 'UTILITAIRE' },
+    { id: 2, marque: 'Toyota', modele: 'Corolla', annee: 2020, motorisation: 'ESSENCE', type_vehicule: 'VOITURE' },
+    { id: 3, marque: 'Toyota', modele: 'RAV4', annee: 2021, motorisation: 'ESSENCE', type_vehicule: 'VOITURE' },
+    { id: 4, marque: 'Toyota', modele: 'Land Cruiser Prado', annee: 2023, motorisation: 'DIESEL', type_vehicule: 'VOITURE' },
+    { id: 5, marque: 'Mitsubishi', modele: 'L200', annee: 2022, motorisation: 'DIESEL', type_vehicule: 'UTILITAIRE' },
+    { id: 6, marque: 'Mitsubishi', modele: 'Pajero', annee: 2019, motorisation: 'DIESEL', type_vehicule: 'VOITURE' },
+    { id: 7, marque: 'Ford', modele: 'Ranger', annee: 2022, motorisation: 'DIESEL', type_vehicule: 'UTILITAIRE' },
+    { id: 8, marque: 'Hyundai', modele: 'Tucson', annee: 2021, motorisation: 'ESSENCE', type_vehicule: 'VOITURE' },
+    { id: 9, marque: 'Hyundai', modele: 'Santa Fe', annee: 2020, motorisation: 'DIESEL', type_vehicule: 'VOITURE' },
+    { id: 10, marque: 'Kia', modele: 'Sportage', annee: 2022, motorisation: 'ESSENCE', type_vehicule: 'VOITURE' },
+    { id: 11, marque: 'Peugeot', modele: '3008', annee: 2021, motorisation: 'DIESEL', type_vehicule: 'VOITURE' },
+    { id: 12, marque: 'Renault', modele: 'Duster', annee: 2022, motorisation: 'ESSENCE', type_vehicule: 'VOITURE' },
+    { id: 13, marque: 'Tesla', modele: 'Model 3', annee: 2023, motorisation: 'ELECTRIQUE', type_vehicule: 'VOITURE' },
+    { id: 14, marque: 'Hyundai', modele: 'Kona Electric', annee: 2022, motorisation: 'ELECTRIQUE', type_vehicule: 'VOITURE' },
+    { id: 15, marque: 'Nissan', modele: 'Leaf', annee: 2021, motorisation: 'ELECTRIQUE', type_vehicule: 'VOITURE' },
+    { id: 16, marque: 'BYD', modele: 'Atto 3', annee: 2023, motorisation: 'ELECTRIQUE', type_vehicule: 'VOITURE' },
+];
+
 const Vehicules = () => {
     const [vehicules, setVehicules] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -132,6 +151,26 @@ const Vehicules = () => {
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="NOUVEAU VÉHICULE">
                 {formError && <div style={{ color: 'var(--danger)', marginBottom: '15px', fontWeight: 500 }}>{formError}</div>}
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div style={{ padding: '10px', backgroundColor: 'var(--bg-panel)', borderRadius: '8px', border: '1px solid var(--border-color)', marginBottom: '10px' }}>
+                        <label style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginBottom: '5px' }}>⚡ SÉLECTION RAPIDE SÉNÉGAL</label>
+                        <select 
+                            onChange={(e) => {
+                                if (!e.target.value) return;
+                                const v = VEHICULES_SENEGAL.find(veh => veh.id === parseInt(e.target.value));
+                                if (v) {
+                                    setFormData(prev => ({ ...prev, marque: v.marque, modele: v.modele, annee: v.annee, motorisation: v.motorisation, type_vehicule: v.type_vehicule }));
+                                }
+                            }}
+                            className="input-field" 
+                            style={{ backgroundColor: '#fff', cursor: 'pointer', border: '1px solid var(--border-color)', color: 'var(--text-main)', margin: 0 }}
+                        >
+                            <option value="">Sélectionner un véhicule fréquent...</option>
+                            {VEHICULES_SENEGAL.map(v => (
+                                <option key={v.id} value={v.id}>{v.marque} {v.modele} ({v.annee}) - {v.motorisation}</option>
+                            ))}
+                        </select>
+                    </div>
+
                     <input type="text" name="immatriculation" placeholder="Immatriculation (ex: AB-123-CD)" value={formData.immatriculation} onChange={handleChange} className="input-field" required />
                     
                     <div style={{ display: 'flex', gap: '16px' }}>

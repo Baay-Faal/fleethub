@@ -8,14 +8,18 @@ class Entretien(models.Model):
         ('VIDANGE', 'Vidange'),
         ('PNEUS', 'Changement de pneus'),
         ('CONTROLE_TECHNIQUE', 'Contrôle technique'),
-        ('BATTERIE', 'Batterie'),
+        ('BATTERIE', 'Batterie 12V'),
+        ('SYSTEME_HT', 'Système Haute Tension (VE)'),
+        ('MOTEUR_ELEC', 'Moteur Électrique (VE)'),
         ('AUTRE', 'Autre'),
     )
 
     STATUT_CHOICES = (
+        ('EN_ATTENTE_VALIDATION', 'En attente de validation'),
         ('PLANIFIE', 'Planifié'),
         ('EN_COURS', 'En cours'),
         ('TERMINE', 'Terminé'),
+        ('REFUSE', 'Refusé'),
         ('ANNULE', 'Annulé'),
     )
 
@@ -27,6 +31,15 @@ class Entretien(models.Model):
     )
     
     type_intervention = models.CharField(_('type d\'intervention'), max_length=50, choices=INTERVENTION_CHOICES)
+    est_immediat = models.BooleanField(_('demande immédiate (panne)'), default=False)
+    
+    chauffeur = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name='demandes_entretiens',
+        verbose_name=_('demandeur (chauffeur)')
+    )
     
     date_prevue = models.DateField(_('date prévue'))
     date_realisation = models.DateField(_('date de réalisation'), null=True, blank=True)
@@ -41,7 +54,7 @@ class Entretien(models.Model):
     
     facture = models.FileField(_('facture'), upload_to='factures_entretien/%Y/%m/', null=True, blank=True)
     
-    statut = models.CharField(_('statut'), max_length=20, choices=STATUT_CHOICES, default='PLANIFIE')
+    statut = models.CharField(_('statut'), max_length=30, choices=STATUT_CHOICES, default='PLANIFIE')
     
     cree_par = models.ForeignKey(
         settings.AUTH_USER_MODEL,

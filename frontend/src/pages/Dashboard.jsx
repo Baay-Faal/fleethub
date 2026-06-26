@@ -15,6 +15,11 @@ const Dashboard = () => {
     const [energieData, setEnergieData] = useState({ type_energie: 'CARBURANT', quantite: '', prix: '', kilometrage: '' });
     const [energieError, setEnergieError] = useState('');
 
+    // Modal Chauffeur (Entretien)
+    const [isEntretienModalOpen, setIsEntretienModalOpen] = useState(false);
+    const [entretienData, setEntretienData] = useState({ type_intervention: 'REVISION', est_immediat: false, date_prevue: new Date().toISOString().split('T')[0], description: '', kilometrage: '' });
+    const [entretienError, setEntretienError] = useState('');
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -108,6 +113,40 @@ const Dashboard = () => {
         }
     };
 
+    const handleEntretienChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setEntretienData({ ...entretienData, [name]: type === 'checkbox' ? checked : value });
+    };
+
+    const handleEntretienSubmit = async (e) => {
+        e.preventDefault();
+        setEntretienError('');
+        const currentMission = mesMissions[mesMissions.length - 1];
+        if (!currentMission) {
+            setEntretienError("Aucun véhicule assigné.");
+            return;
+        }
+
+        try {
+            const payload = {
+                vehicule: currentMission.vehicule,
+                type_intervention: entretienData.type_intervention,
+                est_immediat: entretienData.est_immediat,
+                date_prevue: entretienData.date_prevue,
+                description: entretienData.description,
+                kilometrage: entretienData.kilometrage,
+                cout: 0
+            };
+
+            await api.post('/entretiens/', payload);
+            setIsEntretienModalOpen(false);
+            setEntretienData({ type_intervention: 'REVISION', est_immediat: false, date_prevue: new Date().toISOString().split('T')[0], description: '', kilometrage: '' });
+            alert("Demande d'entretien envoyée au gestionnaire avec succès !");
+        } catch (error) {
+            setEntretienError(error.response?.data?.detail || JSON.stringify(error.response?.data) || "Erreur lors de la demande d'entretien.");
+        }
+    };
+
     if (loading) return <div style={{ padding: '40px' }}>Chargement du tableau de bord...</div>;
 
     if (user?.role === 'CHAUFFEUR') {
@@ -139,6 +178,9 @@ const Dashboard = () => {
                                 <div style={{ color: '#A0A0A0', fontSize: '14px', marginBottom: '20px' }}>
                                     {mesMissions[mesMissions.length - 1].vehicule_details?.marque} {mesMissions[mesMissions.length - 1].vehicule_details?.modele}
                                 </div>
+                                <button className="btn-secondary" onClick={() => setIsEntretienModalOpen(true)} style={{ marginTop: '10px' }}>
+                                    🔧 Demander un Entretien
+                                </button>
                             </div>
                         ) : (
                             <div style={{ padding: '20px 0', color: '#A0A0A0' }}>
@@ -159,6 +201,40 @@ const Dashboard = () => {
                         <input type="number" step="0.01" name="prix" placeholder="Prix Total payé (FCFA)" value={energieData.prix} onChange={handleEnergieChange} className="input-field" required min="1" />
                         <input type="number" name="kilometrage" placeholder="Kilométrage affiché au compteur" value={energieData.kilometrage} onChange={handleEnergieChange} className="input-field" required min="0" />
                         <button type="submit" className="btn-primary" style={{ marginTop: '16px' }}>ENREGISTRER LE RELEVÉ</button>
+                    </form>
+                </Modal>
+
+                <Modal isOpen={isEntretienModalOpen} onClose={() => setIsEntretienModalOpen(false)} title="DEMANDER UN ENTRETIEN">
+                    {entretienError && <div style={{ color: 'var(--danger)', marginBottom: '15px', fontWeight: 500 }}>{entretienError}</div>}
+                    <form onSubmit={handleEntretienSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <select name="type_intervention" value={entretienData.type_intervention} onChange={handleEntretienChange} className="input-field" required style={{ backgroundColor: '#fff', cursor: 'pointer' }}>
+                            <option value="REVISION">Révision</option>
+                            {mesMissions[mesMissions.length - 1]?.vehicule_details?.motorisation === 'ELECTRIQUE' ? (
+                                <>
+                                    <option value="BATTERIE">Batterie 12V</option>
+                                    <option value="SYSTEME_HT">Système Haute Tension (VE)</option>
+                                    <option value="MOTEUR_ELEC">Moteur Électrique (VE)</option>
+                                </>
+                            ) : (
+                                <>
+                                    <option value="VIDANGE">Vidange</option>
+                                    <option value="BATTERIE">Batterie</option>
+                                </>
+                            )}
+                            <option value="PNEUS">Changement de pneus</option>
+                            <option value="CONTROLE_TECHNIQUE">Contrôle technique</option>
+                            <option value="AUTRE">Autre</option>
+                        </select>
+                        <input type="date" name="date_prevue" value={entretienData.date_prevue} onChange={handleEntretienChange} className="input-field" required />
+                        <input type="number" name="kilometrage" placeholder="Kilométrage actuel" value={entretienData.kilometrage} onChange={handleEntretienChange} className="input-field" required min="0" />
+                        <textarea name="description" placeholder="Description du problème (optionnel)" value={entretienData.description} onChange={handleEntretienChange} className="input-field" style={{ minHeight: '80px', resize: 'vertical' }}></textarea>
+                        
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontSize: '14px', fontWeight: 600, color: 'var(--danger)' }}>
+                            <input type="checkbox" name="est_immediat" checked={entretienData.est_immediat} onChange={handleEntretienChange} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
+                            C'est une urgence / Panne immédiate
+                        </label>
+
+                        <button type="submit" className="btn-primary" style={{ marginTop: '16px' }}>ENVOYER LA DEMANDE</button>
                     </form>
                 </Modal>
             </div>
