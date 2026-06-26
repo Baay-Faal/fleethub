@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'apps.utilisateurs',
     'apps.vehicules',
     'apps.affectations',
+    'apps.energie',
 ]
 
 MIDDLEWARE = [
