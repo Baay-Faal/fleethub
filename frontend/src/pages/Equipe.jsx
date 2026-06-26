@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import api from '../api/axios';
-import { Plus } from 'lucide-react';
+import { Plus, Search, Filter } from 'lucide-react';
 import Modal from '../components/Modal';
 import { AuthContext } from '../context/AuthContext';
 
@@ -9,6 +9,8 @@ const Equipe = () => {
     const [utilisateurs, setUtilisateurs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [roleFilter, setRoleFilter] = useState('');
     const [formData, setFormData] = useState({
         prenom: '',
         nom: '',
@@ -48,19 +50,54 @@ const Equipe = () => {
             await api.post('/utilisateurs/', formData);
             setIsModalOpen(false);
             setFormData({ prenom: '', nom: '', email: '', password: '', role: 'CHAUFFEUR' });
-            fetchUtilisateurs(); // Rafraîchit la liste
+            fetchUtilisateurs();
         } catch (error) {
             setFormError(error.response?.data?.detail || JSON.stringify(error.response?.data) || "Erreur lors de l'ajout.");
         }
     };
 
+    const filteredUtilisateurs = utilisateurs.filter(u => {
+        const searchStr = `${u.prenom} ${u.nom} ${u.email}`.toLowerCase();
+        const matchesSearch = searchStr.includes(searchTerm.toLowerCase());
+        const matchesRole = roleFilter ? u.role === roleFilter : true;
+        return matchesSearch && matchesRole;
+    });
+
     return (
         <div className="animate-fade-in" style={{ maxWidth: '1200px', margin: '0 auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                 <h1 style={{ fontSize: '3rem', margin: 0 }}>ÉQUIPE.</h1>
                 <button className="btn-primary" onClick={() => setIsModalOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Plus size={18} strokeWidth={2} /> NOUVEAU MEMBRE
                 </button>
+            </div>
+
+            <div style={{ display: 'flex', gap: '16px', marginBottom: '20px' }}>
+                <div style={{ position: 'relative', flex: 1 }}>
+                    <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                    <input 
+                        type="text" 
+                        placeholder="Rechercher par nom, prénom ou email..." 
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="input-field"
+                        style={{ paddingLeft: '40px', width: '100%' }}
+                    />
+                </div>
+                <div style={{ position: 'relative', width: '250px' }}>
+                    <Filter size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                    <select 
+                        value={roleFilter}
+                        onChange={(e) => setRoleFilter(e.target.value)}
+                        className="input-field"
+                        style={{ paddingLeft: '40px', width: '100%', cursor: 'pointer' }}
+                    >
+                        <option value="">Tous les rôles</option>
+                        <option value="CHAUFFEUR">Chauffeur</option>
+                        <option value="GESTIONNAIRE">Gestionnaire</option>
+                        {user?.role === 'ADMIN' && <option value="ADMIN">Administrateur</option>}
+                    </select>
+                </div>
             </div>
 
             <div className="panel" style={{ padding: 0, overflow: 'hidden' }}>
@@ -75,10 +112,10 @@ const Equipe = () => {
                     <tbody>
                         {loading ? (
                             <tr><td colSpan="3" style={{ padding: '40px', textAlign: 'center', fontWeight: 600 }}>CHARGEMENT...</td></tr>
-                        ) : utilisateurs.length === 0 ? (
-                            <tr><td colSpan="3" style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>AUCUN MEMBRE ENREGISTRÉ</td></tr>
+                        ) : filteredUtilisateurs.length === 0 ? (
+                            <tr><td colSpan="3" style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>AUCUN MEMBRE TROUVÉ</td></tr>
                         ) : (
-                            utilisateurs.map(u => (
+                            filteredUtilisateurs.map(u => (
                                 <tr key={u.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
                                     <td style={{ padding: '20px', fontWeight: 600 }}>{u.prenom} {u.nom}</td>
                                     <td style={{ padding: '20px', color: 'var(--text-muted)' }}>{u.email}</td>

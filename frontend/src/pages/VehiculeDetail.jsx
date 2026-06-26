@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { AuthContext } from '../context/AuthContext';
-import { ArrowLeft, CarFront, Users, Droplet, Wrench, Edit, Trash2, Download } from 'lucide-react';
+import { ArrowLeft, CarFront, Users, Droplet, Wrench, Edit, Trash2, Download, AlertTriangle } from 'lucide-react';
 import Modal from '../components/Modal';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
@@ -135,6 +135,12 @@ const VehiculeDetail = () => {
                     <p style={{ color: 'var(--text-muted)', fontSize: '18px', margin: 0 }}>
                         {vehicule.marque} {vehicule.modele} ({vehicule.annee}) - {vehicule.motorisation}
                     </p>
+                    {vehicule.motorisation !== 'ELECTRIQUE' && (vehicule.kilometrage - (vehicule.kilometrage_dernier_entretien || 0)) >= 15000 && (
+                        <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--danger)', fontWeight: 600, fontSize: '14px', backgroundColor: '#FFEBEE', padding: '8px 12px', borderRadius: '4px', display: 'inline-flex' }}>
+                            <AlertTriangle size={16} strokeWidth={2.5} />
+                            Entretien recommandé : seuil de 15 000 km atteint depuis la dernière révision ({vehicule.kilometrage_dernier_entretien || 0} km)
+                        </div>
+                    )}
                 </div>
                 {user?.role === 'ADMIN' && (
                     <div style={{ display: 'flex', gap: '10px' }}>

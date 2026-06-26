@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/axios';
-import { Plus } from 'lucide-react';
+import { Plus, Search, Filter, AlertTriangle } from 'lucide-react';
 import Modal from '../components/Modal';
 
 const VEHICULES_SENEGAL = [
@@ -26,6 +26,8 @@ const Vehicules = () => {
     const [vehicules, setVehicules] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [statusFilter, setStatusFilter] = useState('');
     const [formData, setFormData] = useState({
         immatriculation: '',
         marque: '',
@@ -70,7 +72,7 @@ const Vehicules = () => {
             });
             setIsModalOpen(false);
             setFormData({ immatriculation: '', marque: '', modele: '', annee: new Date().getFullYear(), type_vehicule: 'VOITURE', motorisation: 'ESSENCE', statut: 'DISPONIBLE' });
-            fetchVehicules(); // Rafraîchit la liste
+            fetchVehicules();
         } catch (error) {
             setFormError(error.response?.data?.detail || JSON.stringify(error.response?.data) || "Erreur lors de l'ajout du véhicule.");
         }
@@ -89,9 +91,20 @@ const Vehicules = () => {
         document.body.removeChild(link);
     };
 
+    const filteredVehicules = vehicules.filter(v => {
+        const matchesSearch = (v.immatriculation + v.marque + v.modele).toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesStatus = statusFilter ? v.statut === statusFilter : true;
+        return matchesSearch && matchesStatus;
+    });
+
+    const isMaintenanceDue = (v) => {
+        if (v.motorisation === 'ELECTRIQUE') return false;
+        return (v.kilometrage - (v.kilometrage_dernier_entretien || 0)) >= 15000;
+    };
+
     return (
         <div className="animate-fade-in" style={{ maxWidth: '1200px', margin: '0 auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                 <h1 style={{ fontSize: '3rem', margin: 0 }}>VÉHICULES.</h1>
                 <div style={{ display: 'flex', gap: '10px' }}>
                     <button className="btn-secondary" onClick={exportCSV} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', color: '#fff', border: '1px solid #333' }}>
@@ -100,6 +113,35 @@ const Vehicules = () => {
                     <button className="btn-primary" onClick={() => setIsModalOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <Plus size={18} strokeWidth={2} /> AJOUTER
                     </button>
+                </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '16px', marginBottom: '20px' }}>
+                <div style={{ position: 'relative', flex: 1 }}>
+                    <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                    <input 
+                        type="text" 
+                        placeholder="Rechercher par immatriculation, marque, modèle..." 
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="input-field"
+                        style={{ paddingLeft: '40px', width: '100%' }}
+                    />
+                </div>
+                <div style={{ position: 'relative', width: '250px' }}>
+                    <Filter size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                    <select 
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        className="input-field"
+                        style={{ paddingLeft: '40px', width: '100%', cursor: 'pointer' }}
+                    >
+                        <option value="">Tous les statuts</option>
+                        <option value="DISPONIBLE">Disponible</option>
+                        <option value="EN_UTILISATION">En utilisation</option>
+                        <option value="EN_MAINTENANCE">En maintenance</option>
+                        <option value="HORS_SERVICE">Hors service</option>
+                    </select>
                 </div>
             </div>
 
@@ -117,12 +159,19 @@ const Vehicules = () => {
                     <tbody>
                         {loading ? (
                             <tr><td colSpan="5" style={{ padding: '40px', textAlign: 'center', fontWeight: 600 }}>CHARGEMENT...</td></tr>
-                        ) : vehicules.length === 0 ? (
-                            <tr><td colSpan="5" style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>AUCUN VÉHICULE ENREGISTRÉ</td></tr>
+                        ) : filteredVehicules.length === 0 ? (
+                            <tr><td colSpan="5" style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>AUCUN VÉHICULE TROUVÉ</td></tr>
                         ) : (
-                            vehicules.map(v => (
+                            filteredVehicules.map(v => (
                                 <tr key={v.id} onClick={() => window.location.href = `/vehicules/${v.id}`} style={{ borderBottom: '1px solid var(--border-color)', cursor: 'pointer', transition: 'background-color 0.2s' }} onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-panel)'} onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
-                                    <td style={{ padding: '20px', fontWeight: 600 }}>{v.immatriculation}</td>
+                                    <td style={{ padding: '20px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        {v.immatriculation}
+                                        {isMaintenanceDue(v) && (
+                                            <div title="Entretien recommandé (> 15 000 km)" style={{ color: 'var(--danger)', display: 'flex', alignItems: 'center' }}>
+                                                <AlertTriangle size={18} strokeWidth={2.5} />
+                                            </div>
+                                        )}
+                                    </td>
                                     <td style={{ padding: '20px' }}>
                                         {v.marque} {v.modele}
                                         <span style={{fontSize: '11px', color: 'var(--text-muted)', display: 'block', marginTop: '4px'}}>{v.type_vehicule}</span>
