@@ -29,6 +29,8 @@ urlpatterns = [
     path('api/v1/', include('apps.utilisateurs.urls')),
     path('api/v1/', include('apps.vehicules.urls')),
     path('api/v1/', include('apps.affectations.urls')),
+    path('api/v1/', include('apps.energie.urls')),
+    path('api/v1/', include('apps.entretiens.urls')),
 ]
 
 if settings.DEBUG:
