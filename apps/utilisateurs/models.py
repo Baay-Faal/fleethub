@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.utils.translation import gettext_lazy as _
+from django.conf import settings
 
 class UtilisateurManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -42,6 +43,7 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
         choices=ROLE_CHOICES,
         default='CHAUFFEUR',
     )
+    cgu_acceptees = models.BooleanField(_('CGU acceptées'), default=False)
     numero_permis = models.CharField(_('numéro de permis'), max_length=50, blank=True, null=True)
     expiration_permis = models.DateField(_('expiration du permis'), blank=True, null=True)
     
@@ -68,3 +70,23 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f"{self.email} ({self.get_role_display()})"
+
+class Notification(models.Model):
+    destinataire = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='notifications',
+        verbose_name=_('destinataire')
+    )
+    message = models.TextField(_('message'))
+    est_lu = models.BooleanField(_('est lu'), default=False)
+    date_creation = models.DateTimeField(_('date de création'), auto_now_add=True)
+
+    class Meta:
+        db_table = 'utilisateurs_notifications'
+        verbose_name = _('notification')
+        verbose_name_plural = _('notifications')
+        ordering = ['-date_creation']
+
+    def __str__(self):
+        return f"Notif for {self.destinataire.email}: {self.message[:20]}"

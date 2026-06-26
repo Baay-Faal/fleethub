@@ -97,7 +97,7 @@ const Entretiens = () => {
                                     <td style={{ padding: '20px', fontWeight: 600 }}>{getVehiculeName(e.vehicule)}</td>
                                     <td style={{ padding: '20px' }}>{e.type_entretien}</td>
                                     <td style={{ padding: '20px', color: 'var(--text-muted)' }}>{new Date(e.date_prevue).toLocaleDateString()}</td>
-                                    <td style={{ padding: '20px', fontWeight: 600 }}>{e.cout_estime ? `${e.cout_estime} €` : '-'}</td>
+                                    <td style={{ padding: '20px', fontWeight: 600 }}>{e.cout_estime ? `${e.cout_estime} FCFA` : '-'}</td>
                                     <td style={{ padding: '20px' }}>
                                         <span style={{ 
                                             padding: '6px 12px', 
@@ -141,7 +141,7 @@ const Entretiens = () => {
                         <input type="date" name="date_prevue" value={formData.date_prevue} onChange={handleChange} className="input-field" style={{ width: '100%' }} required />
                     </div>
 
-                    <input type="number" step="0.01" name="cout_estime" placeholder="Coût Estimé (€) (Optionnel)" value={formData.cout_estime} onChange={handleChange} className="input-field" min="0" />
+                    <input type="number" step="0.01" name="cout_estime" placeholder="Coût Estimé (FCFA) (Optionnel)" value={formData.cout_estime} onChange={handleChange} className="input-field" min="0" />
 
                     <select name="statut" value={formData.statut} onChange={handleChange} className="input-field" required style={{ backgroundColor: '#fff', cursor: 'pointer' }}>
                         <option value="PLANIFIE">PLANIFIÉ</option>

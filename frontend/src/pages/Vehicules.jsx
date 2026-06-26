@@ -12,6 +12,8 @@ const Vehicules = () => {
         marque: '',
         modele: '',
         annee: new Date().getFullYear(),
+        type_vehicule: 'VOITURE',
+        motorisation: 'ESSENCE',
         statut: 'DISPONIBLE'
     });
     const [formError, setFormError] = useState('');
@@ -41,8 +43,6 @@ const Vehicules = () => {
         try {
             await api.post('/vehicules/', {
                 ...formData,
-                type_vehicule: 'VOITURE',
-                motorisation: 'ESSENCE',
                 date_achat: `${formData.annee}-01-01`,
                 prix_achat: '0.00',
                 vin: 'VIN-' + Date.now(),
@@ -50,20 +50,38 @@ const Vehicules = () => {
                 expiration_controle_technique: '2030-01-01'
             });
             setIsModalOpen(false);
-            setFormData({ immatriculation: '', marque: '', modele: '', annee: new Date().getFullYear(), statut: 'DISPONIBLE' });
+            setFormData({ immatriculation: '', marque: '', modele: '', annee: new Date().getFullYear(), type_vehicule: 'VOITURE', motorisation: 'ESSENCE', statut: 'DISPONIBLE' });
             fetchVehicules(); // Rafraîchit la liste
         } catch (error) {
             setFormError(error.response?.data?.detail || JSON.stringify(error.response?.data) || "Erreur lors de l'ajout du véhicule.");
         }
     };
 
+    const exportCSV = () => {
+        const header = "IMMATRICULATION,MARQUE,MODELE,ANNEE,MOTEUR,STATUT,KILOMETRAGE\n";
+        const rows = vehicules.map(v => `${v.immatriculation},${v.marque},${v.modele},${v.annee},${v.motorisation},${v.statut},${v.kilometrage}`).join("\n");
+        const csvContent = "data:text/csv;charset=utf-8," + header + rows;
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "vehicules_fleethub.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     return (
         <div className="animate-fade-in" style={{ maxWidth: '1200px', margin: '0 auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
                 <h1 style={{ fontSize: '3rem', margin: 0 }}>VÉHICULES.</h1>
-                <button className="btn-primary" onClick={() => setIsModalOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Plus size={18} strokeWidth={2} /> AJOUTER
-                </button>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                    <button className="btn-secondary" onClick={exportCSV} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', color: '#fff', border: '1px solid #333' }}>
+                        <span style={{ fontSize: '18px' }}>↓</span> EXPORTER CSV
+                    </button>
+                    <button className="btn-primary" onClick={() => setIsModalOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <Plus size={18} strokeWidth={2} /> AJOUTER
+                    </button>
+                </div>
             </div>
 
             <div className="panel" style={{ padding: 0, overflow: 'hidden' }}>
@@ -72,20 +90,25 @@ const Vehicules = () => {
                         <tr style={{ borderBottom: '2px solid var(--text-main)' }}>
                             <th style={{ padding: '20px', fontWeight: 700, fontSize: '13px', color: 'var(--text-muted)' }}>IMMATRICULATION</th>
                             <th style={{ padding: '20px', fontWeight: 700, fontSize: '13px', color: 'var(--text-muted)' }}>MARQUE / MODÈLE</th>
+                            <th style={{ padding: '20px', fontWeight: 700, fontSize: '13px', color: 'var(--text-muted)' }}>MOTEUR</th>
                             <th style={{ padding: '20px', fontWeight: 700, fontSize: '13px', color: 'var(--text-muted)' }}>ANNÉE</th>
                             <th style={{ padding: '20px', fontWeight: 700, fontSize: '13px', color: 'var(--text-muted)' }}>STATUT</th>
                         </tr>
                     </thead>
                     <tbody>
                         {loading ? (
-                            <tr><td colSpan="4" style={{ padding: '40px', textAlign: 'center', fontWeight: 600 }}>CHARGEMENT...</td></tr>
+                            <tr><td colSpan="5" style={{ padding: '40px', textAlign: 'center', fontWeight: 600 }}>CHARGEMENT...</td></tr>
                         ) : vehicules.length === 0 ? (
-                            <tr><td colSpan="4" style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>AUCUN VÉHICULE ENREGISTRÉ</td></tr>
+                            <tr><td colSpan="5" style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>AUCUN VÉHICULE ENREGISTRÉ</td></tr>
                         ) : (
                             vehicules.map(v => (
-                                <tr key={v.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                                <tr key={v.id} onClick={() => window.location.href = `/vehicules/${v.id}`} style={{ borderBottom: '1px solid var(--border-color)', cursor: 'pointer', transition: 'background-color 0.2s' }} onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-panel)'} onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
                                     <td style={{ padding: '20px', fontWeight: 600 }}>{v.immatriculation}</td>
-                                    <td style={{ padding: '20px' }}>{v.marque} {v.modele}</td>
+                                    <td style={{ padding: '20px' }}>
+                                        {v.marque} {v.modele}
+                                        <span style={{fontSize: '11px', color: 'var(--text-muted)', display: 'block', marginTop: '4px'}}>{v.type_vehicule}</span>
+                                    </td>
+                                    <td style={{ padding: '20px', color: 'var(--text-muted)', fontSize: '13px', fontWeight: 600 }}>{v.motorisation}</td>
                                     <td style={{ padding: '20px', color: 'var(--text-muted)' }}>{v.annee}</td>
                                     <td style={{ padding: '20px' }}>
                                         <span style={{ 
@@ -110,16 +133,40 @@ const Vehicules = () => {
                 {formError && <div style={{ color: 'var(--danger)', marginBottom: '15px', fontWeight: 500 }}>{formError}</div>}
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <input type="text" name="immatriculation" placeholder="Immatriculation (ex: AB-123-CD)" value={formData.immatriculation} onChange={handleChange} className="input-field" required />
-                    <input type="text" name="marque" placeholder="Marque (ex: Renault)" value={formData.marque} onChange={handleChange} className="input-field" required />
-                    <input type="text" name="modele" placeholder="Modèle (ex: Clio)" value={formData.modele} onChange={handleChange} className="input-field" required />
-                    <input type="number" name="annee" placeholder="Année" value={formData.annee} onChange={handleChange} className="input-field" required min="1990" max="2100" />
                     
-                    <select name="statut" value={formData.statut} onChange={handleChange} className="input-field" required style={{ backgroundColor: '#fff', cursor: 'pointer' }}>
-                        <option value="DISPONIBLE">DISPONIBLE</option>
-                        <option value="EN_MAINTENANCE">EN MAINTENANCE</option>
-                        <option value="EN_MISSION">EN MISSION</option>
-                        <option value="HORS_SERVICE">HORS SERVICE</option>
-                    </select>
+                    <div style={{ display: 'flex', gap: '16px' }}>
+                        <input type="text" name="marque" placeholder="Marque" value={formData.marque} onChange={handleChange} className="input-field" style={{ flex: 1 }} required />
+                        <input type="text" name="modele" placeholder="Modèle" value={formData.modele} onChange={handleChange} className="input-field" style={{ flex: 1 }} required />
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '16px' }}>
+                        <select name="type_vehicule" value={formData.type_vehicule} onChange={handleChange} className="input-field" required style={{ backgroundColor: '#fff', cursor: 'pointer', flex: 1 }}>
+                            <option value="VOITURE">VOITURE</option>
+                            <option value="MOTO">MOTO</option>
+                            <option value="CAMIONNETTE">CAMIONNETTE</option>
+                            <option value="UTILITAIRE">UTILITAIRE</option>
+                            <option value="CAMION">CAMION</option>
+                        </select>
+
+                        <select name="motorisation" value={formData.motorisation} onChange={handleChange} className="input-field" required style={{ backgroundColor: '#fff', cursor: 'pointer', flex: 1 }}>
+                            <option value="ESSENCE">ESSENCE</option>
+                            <option value="DIESEL">DIESEL</option>
+                            <option value="HYBRIDE">HYBRIDE</option>
+                            <option value="HYBRIDE_RECHARGEABLE">HYBRIDE RECH.</option>
+                            <option value="ELECTRIQUE">ÉLECTRIQUE</option>
+                        </select>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '16px' }}>
+                        <input type="number" name="annee" placeholder="Année" value={formData.annee} onChange={handleChange} className="input-field" style={{ flex: 1 }} required min="1990" max="2100" />
+                        
+                        <select name="statut" value={formData.statut} onChange={handleChange} className="input-field" required style={{ backgroundColor: '#fff', cursor: 'pointer', flex: 1 }}>
+                            <option value="DISPONIBLE">DISPONIBLE</option>
+                            <option value="EN_MAINTENANCE">EN MAINTENANCE</option>
+                            <option value="EN_MISSION">EN MISSION</option>
+                            <option value="HORS_SERVICE">HORS SERVICE</option>
+                        </select>
+                    </div>
                     
                     <button type="submit" className="btn-primary" style={{ marginTop: '16px' }}>ENREGISTRER</button>
                 </form>

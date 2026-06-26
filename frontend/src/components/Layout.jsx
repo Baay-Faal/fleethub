@@ -4,11 +4,17 @@ import { AuthContext } from '../context/AuthContext';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
 
+import CGUAcceptance from '../pages/CGUAcceptance';
+
 const Layout = () => {
     const { user } = useContext(AuthContext);
 
     if (!user) {
         return <Navigate to="/login" replace />;
+    }
+
+    if (!user.cgu_acceptees) {
+        return <CGUAcceptance />;
     }
 
     return (

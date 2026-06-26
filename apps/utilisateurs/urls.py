@@ -4,10 +4,11 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from .views import UtilisateurViewSet
+from .views import UtilisateurViewSet, NotificationViewSet
 
 router = DefaultRouter()
 router.register(r'utilisateurs', UtilisateurViewSet, basename='utilisateur')
+router.register(r'notifications', NotificationViewSet, basename='notification')
 
 urlpatterns = [
     # Routes Authentification (JWT)

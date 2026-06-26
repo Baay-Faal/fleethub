@@ -23,6 +23,9 @@ class Affectation(models.Model):
     date_debut = models.DateField(_('date de début'))
     date_fin = models.DateField(_('date de fin'), null=True, blank=True)
     
+    kilometrage_depart = models.PositiveIntegerField(_('kilométrage au départ'), null=True, blank=True)
+    kilometrage_retour = models.PositiveIntegerField(_('kilométrage au retour'), null=True, blank=True)
+    
     type_affectation = models.CharField(
         _('type d\'affectation'),
         max_length=20,

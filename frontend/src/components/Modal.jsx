@@ -8,12 +8,13 @@ const Modal = ({ isOpen, onClose, title, children }) => {
         <div style={{
             position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
             backgroundColor: 'rgba(0, 0, 0, 0.4)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            zIndex: 100, backdropFilter: 'blur(2px)'
+            zIndex: 100, backdropFilter: 'blur(2px)',
+            overflowY: 'auto', padding: '5vh 20px'
         }}>
             <div className="animate-fade-in" style={{
                 backgroundColor: 'var(--bg-color)',
                 width: '100%', maxWidth: '500px',
+                margin: '0 auto',
                 border: '1px solid var(--text-main)',
                 boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
             }}>

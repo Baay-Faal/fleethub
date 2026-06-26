@@ -6,7 +6,7 @@ Utilisateur = get_user_model()
 class UtilisateurSerializer(serializers.ModelSerializer):
     class Meta:
         model = Utilisateur
-        fields = ('id', 'email', 'prenom', 'nom', 'role', 'is_active', 'password')
+        fields = ('id', 'email', 'prenom', 'nom', 'role', 'is_active', 'cgu_acceptees', 'password')
         extra_kwargs = {
             'password': {'write_only': True},
         }
@@ -26,3 +26,10 @@ class UtilisateurSerializer(serializers.ModelSerializer):
             user.set_password(password)
             user.save()
         return user
+
+from .models import Notification
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = '__all__'

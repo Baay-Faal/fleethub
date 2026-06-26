@@ -1,6 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
 import api from '../api/axios';
-import { useNavigate } from 'react-router-dom';
 
 export const AuthContext = createContext();
 
@@ -12,8 +11,15 @@ export const AuthProvider = ({ children }) => {
         const checkAuth = async () => {
             const token = localStorage.getItem('access_token');
             if (token) {
-                // Simulation d'un user valide si token présent
-                setUser({ isAuthenticated: true });
+                try {
+                    const res = await api.get('/utilisateurs/me/');
+                    setUser({ isAuthenticated: true, ...res.data });
+                } catch (error) {
+                    console.error("Session expirée");
+                    localStorage.removeItem('access_token');
+                    localStorage.removeItem('refresh_token');
+                    setUser(null);
+                }
             }
             setLoading(false);
         };
@@ -25,7 +31,11 @@ export const AuthProvider = ({ children }) => {
             const response = await api.post('/auth/login/', { email, password });
             localStorage.setItem('access_token', response.data.access);
             localStorage.setItem('refresh_token', response.data.refresh);
-            setUser({ isAuthenticated: true });
+            
+            // Récupère les infos complètes de l'utilisateur (dont son rôle)
+            const userRes = await api.get('/utilisateurs/me/');
+            setUser({ isAuthenticated: true, ...userRes.data });
+            
             return { success: true };
         } catch (error) {
             return { success: false, error: "Identifiants incorrects" };

@@ -102,7 +102,7 @@ const Energie = () => {
                                     <td style={{ padding: '20px', fontWeight: 600 }}>{getVehiculeName(c.vehicule)}</td>
                                     <td style={{ padding: '20px' }}>{c.type_energie}</td>
                                     <td style={{ padding: '20px' }}>{c.quantite} {c.type_energie === 'ELECTRICITE' ? 'kWh' : 'L'}</td>
-                                    <td style={{ padding: '20px', fontWeight: 600 }}>{c.cout_total} €</td>
+                                    <td style={{ padding: '20px', fontWeight: 600 }}>{c.cout_total} FCFA</td>
                                     <td style={{ padding: '20px', color: 'var(--text-muted)' }}>{new Date(c.date_releve).toLocaleDateString()}</td>
                                 </tr>
                             ))
@@ -128,7 +128,7 @@ const Energie = () => {
 
                     <input type="number" step="0.01" name="quantite" placeholder="Quantité (L ou kWh)" value={formData.quantite} onChange={handleChange} className="input-field" required min="0.01" />
                     
-                    <input type="number" step="0.01" name="cout_total" placeholder="Coût Total (€)" value={formData.cout_total} onChange={handleChange} className="input-field" required min="0.01" />
+                    <input type="number" step="0.01" name="cout_total" placeholder="Coût Total (FCFA)" value={formData.cout_total} onChange={handleChange} className="input-field" required min="0.01" />
 
                     <div>
                         <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '4px', display: 'block' }}>DATE DU RELEVÉ</label>
