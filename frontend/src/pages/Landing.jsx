@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Shield, Zap, Compass, Users, Activity, Settings } from 'lucide-react';
+import logoImg from '../assets/logo.png';
 import './Landing.css';
 
 const FeatureCard = ({ icon: Icon, title, description, delay }) => {
@@ -47,7 +48,7 @@ const Landing = () => {
     <div className="landing-container">
       {/* Navbar */}
       <nav className="landing-nav">
-        <div className="logo">FLEETHUB.</div>
+        <img src={logoImg} alt="FleetHub Logo" className="landing-logo-img" />
         <button className="btn-login-outline" onClick={() => navigate('/login')}>
           SE CONNECTER
         </button>

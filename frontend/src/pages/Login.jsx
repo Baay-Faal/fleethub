@@ -12,7 +12,7 @@ const Login = () => {
     const navigate = useNavigate();
 
     if (user) {
-        return <Navigate to="/" replace />;
+        return <Navigate to="/dashboard" replace />;
     }
 
     const handleSubmit = async (e) => {
@@ -22,7 +22,7 @@ const Login = () => {
         if (!res.success) {
             setError(res.error);
         } else {
-            navigate('/');
+            navigate('/dashboard');
         }
     };
 
